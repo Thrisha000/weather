@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Report</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-image: url(https://png.pngtree.com/thumb_back/fh260/background/20201012/pngtree-white-cloud-on-blue-sky-weather-background-image_410050.jpg);
+            background-size:cover;
+            background-repeat: no-repeat;
+            font-family: Arial, sans-serif;
+            padding-top: 10%;
+        }
+        .weather-container {
+            margin-top: 50px;
+            padding: 20px;
+            background-color: palevioletred;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .weather-left {
+            background-size: cover;
+            background-position: center;
+            height: 300px;
+            border-radius: 15px;
+            color: white;
+        }
+        .temperature {
+            font-size: 3rem;
+            font-weight: bold;
+        }
+        .weather-details {
+            padding: 20px;
+            background-color: rgb(248, 179, 201);
+            color:black;
+            border-radius: 15px;
+        }
+        .weather-details h4 {
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="text-center mb-5">Know About The Climate</h1>
+    
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="input-group">
+                <input type="text" id="locationInput" class="form-control" placeholder="Enter location">
+                <button class="btn btn-danger" onclick="getWeather()">Search</button>
+            </div>
+        </div>
+    </div>
+    
+  
+    <div class="container weather-container d-none" id="weatherDisplay">
+        <div class="row">
+          
+            <div class="col-md-6 d-flex align-items-center justify-content-center weather-left">
+                <div class="text-center text-dark">
+                    <h1>Weather</h1>
+                    <p class="temperature" id="temp">--°C</p>
+                    <p id="feelsLike">Feels like --°C</p>
+                    <p id="location">Location</p>
+                    <p id="description">Description</p>
+                </div>
+            </div>
+            
+  
+            <div class="col-md-6 weather-details">
+                <h4>Weather Details</h4>
+                <p><strong>Country:</strong> <span id="country">--</span></p>
+                <p><strong>Humidity:</strong> <span id="humidity">--%</span></p>
+                <p><strong>Wind:</strong> <span id="wind">-- Kmph</span></p>
+                <p><strong>Pressure:</strong> <span id="pressure">-- hPa</span></p>
+                <p><strong>Date:</strong> <span id="date">--</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<script>
+    const apiKey = '5fe36b192ffd1c36dffb6752bc1722b2'; 
+
+    async function getWeather() {
+        const location = document.getElementById("locationInput").value;
+        const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric`;
+
+        try {
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                throw new Error("Location not found");
+            }
+            const data = await response.json();
+            displayWeather(data);
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
+    function displayWeather(data) {
+        const temp = data.main.temp;
+        document.getElementById("temp").innerText = `${temp}°C`;
+        document.getElementById("feelsLike").innerText = `Feels like ${data.main.feels_like}°C`;
+        document.getElementById("location").innerText = data.name;
+        document.getElementById("description").innerText = data.weather[0].description;
+        document.getElementById("country").innerText = data.sys.country;
+        document.getElementById("humidity").innerText = `${data.main.humidity}%`;
+        document.getElementById("wind").innerText = `${(data.wind.speed * 3.6).toFixed(2)} Kmph`; // Convert from m/s to Kmph
+        document.getElementById("pressure").innerText = `${data.main.pressure} hPa`;
+
+     
+        const date = new Date();
+        document.getElementById("date").innerText = date.toString();
+
+       
+        const weatherLeft = document.querySelector('.weather-left');
+
+        if (temp <= 15) {
+       
+        weatherLeft.style.backgroundImage = "url('https://png.pngtree.com/thumb_back/fh260/background/20230712/pngtree-breathtaking-winter-wonderland-close-up-of-mountains-forest-and-snowy-landscape-image_3853877.jpg')";
+    } else if (temp > 15 && temp <= 25) {
+        
+        weatherLeft.style.backgroundImage = "url('https://t3.ftcdn.net/jpg/07/17/46/24/360_F_717462470_8c6qtTSHYtfPQQ4UoOuo8VXEvQnr24Vc.jpg')";
+    } else {
+        
+        weatherLeft.style.backgroundImage = "url('https://res.cloudinary.com/cognitives-s3/image/upload/c_limit,dpr_auto,f_auto,fl_lossy,h_1900,q_auto,w_1900/v1/cog-live/n/1271/2023/Jul/11/jUTbKPL3z8R6wmFbu9Mn.jpg')";
+    }
+
+       
+        document.getElementById("weatherDisplay").classList.remove('d-none');
+    }
+</script>
+
+</body>
+</html>
